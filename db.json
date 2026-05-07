@@ -1,0 +1,48 @@
+{
+  "projects": [
+    {
+      "id": "2",
+      "title": "ML Price Predict",
+      "owner": "A. Khan",
+      "technologies": [
+        "Python",
+        "Scikit-learn",
+        "Azure ML"
+      ],
+      "rating": 4.6,
+      "description": "Machine learning model for predicting product prices using historical data.",
+      "githubUrl": "https://github.com/",
+      "files": []
+    },
+    {
+      "id": "3",
+      "title": "DevOps Pipeline",
+      "owner": "L. Chen",
+      "technologies": [
+        "Azure DevOps",
+        "Docker",
+        "K8s"
+      ],
+      "rating": 4.9,
+      "description": "CI/CD pipeline project using Docker containers and Kubernetes deployment.",
+      "githubUrl": "https://github.com/",
+      "files": []
+    },
+    {
+      "title": "CloudPortfolio Demo",
+      "owner": "N. Shrestha",
+      "technologies": [
+        "React",
+        "Azure Functions",
+        "Cosmos DB",
+        "Blob Storage"
+      ],
+      "rating": 0,
+      "description": "Student project portfolio platform using Azure cloud-native services.",
+      "githubUrl": "https://github.com/nischal/cloudportfolio",
+      "files": [],
+      "id": "MpSxPXsYF_A"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
