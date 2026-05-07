@@ -1,16 +1,107 @@
-# React + Vite
+# CloudPortfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CloudPortfolio is a cloud-native student project portfolio platform for browsing, submitting, editing, deleting, and managing academic software projects.
 
-Currently, two official plugins are available:
+Repository: https://github.com/Nischal270/cloudportfolio
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Coursework Context
 
-## React Compiler
+- Module: COM682 Cloud Native Development
+- Student: Nischal Shrestha
+- Student ID: B00976199
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Browse all projects
+- Search and filter by technology
+- Submit new project
+- Edit project
+- Delete project
+- My Portfolio page for projects owned by the simulated user
+- Simulated Microsoft Entra ID sign-in
+- Azure Architecture mapping page
+- Dashboard summary cards
+- Local REST API using json-server
+- GitHub Actions CI workflow
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+
+- React
+- Vite
+- JavaScript
+- React Router
+- json-server
+- GitHub Actions
+
+## Azure Architecture Mapping
+
+| Local Prototype Component | Azure Cloud Service | Purpose |
+| --- | --- | --- |
+| Vite React frontend | Azure Static Web Apps | SPA hosting with HTTPS/CDN |
+| json-server API | Azure Functions | REST CRUD endpoints |
+| db.json | Azure Cosmos DB | Project metadata storage |
+| File name simulation | Azure Blob Storage | Multimedia file storage |
+| Simulated sign-in state | Microsoft Entra ID | Authentication and identity claims |
+| Dashboard/API status | Application Insights | Monitoring and telemetry |
+| GitHub workflow | GitHub Actions | CI/CD automation |
+
+## Run Locally
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the local REST API:
+
+```bash
+npm run api
+```
+
+Start the Vite frontend in a second terminal:
+
+```bash
+npm run dev
+```
+
+Frontend URL:
+
+```text
+http://localhost:5173
+```
+
+API URL:
+
+```text
+http://localhost:5000/projects
+```
+
+## Simulated CRUD Endpoints
+
+The local prototype uses json-server to simulate REST API behaviour:
+
+- `GET /projects`
+- `POST /projects`
+- `PUT /projects/{id}`
+- `DELETE /projects/{id}`
+
+## CI/CD
+
+The repository includes a GitHub Actions workflow at `.github/workflows/frontend-ci.yml`.
+
+The workflow runs on push and pull request events targeting the `main` branch. It checks out the repository, installs dependencies with `npm ci`, and builds the Vite app with `npm run build`.
+
+## Future Azure Deployment
+
+Planned deployment improvements:
+
+- Replace json-server with Azure Functions
+- Replace db.json with Azure Cosmos DB
+- Store uploaded files in Azure Blob Storage
+- Use Microsoft Entra ID for real login
+- Enable Application Insights telemetry
+
+## Academic Integrity Note
+
+This repository represents a coursework prototype and should be adapted responsibly.
