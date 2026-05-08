@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function UploadPage({
   apiUrl,
   formData,
@@ -10,18 +12,24 @@ function UploadPage({
   onInputChange,
   onFileChange,
 }) {
+  const [formMessage, setFormMessage] = useState(null);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setFormMessage(null);
 
     if (!formData.title || !formData.githubUrl || !formData.description || !formData.technologies) {
-      alert("Please complete all required fields.");
+      setFormMessage({ type: "error", text: "Please complete all required fields." });
       return;
     }
 
     const githubPattern = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/?$/;
 
     if (!githubPattern.test(formData.githubUrl)) {
-      alert("Please enter a valid GitHub repository URL, for example: https://github.com/username/repo");
+      setFormMessage({
+        type: "error",
+        text: "Please enter a valid GitHub repository URL, for example: https://github.com/username/repo",
+      });
       return;
     }
 
@@ -78,9 +86,9 @@ function UploadPage({
       setAttachedFiles([]);
       setFileInputKey((currentKey) => currentKey + 1);
 
-      alert("Project added successfully. This simulates POST /api/projects.");
+      setFormMessage({ type: "success", text: "Project uploaded successfully." });
     } catch {
-      alert("Unable to save project. Please check that json-server is running.");
+      setFormMessage({ type: "error", text: "Something went wrong. Please try again." });
     }
   };
 
@@ -93,6 +101,10 @@ function UploadPage({
           attaching media files for Blob Storage.
         </p>
       </div>
+
+      {formMessage && (
+        <p className={`inline-message ${formMessage.type}`}>{formMessage.text}</p>
+      )}
 
       <form className="upload-layout" onSubmit={handleSubmit}>
         <div className="form-panel">

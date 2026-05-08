@@ -10,7 +10,6 @@ function SignInPage({ setCurrentUser }) {
       role: "Student",
     });
 
-    alert("Signed in successfully. This simulates Microsoft Entra ID authentication.");
     navigate("/portfolio");
   };
 

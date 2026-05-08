@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import DashboardStats from "../components/DashboardStats.jsx";
 
@@ -13,6 +14,29 @@ function BrowsePage({
   onDeleteProject,
   onDownloadProject,
 }) {
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+
+  const showFeedback = (message, type = "success") => {
+    setFeedback({ message, type });
+    window.setTimeout(() => setFeedback(null), 3500);
+  };
+
+  const handleConfirmDelete = async (projectId) => {
+    const result = await onDeleteProject(projectId);
+
+    setPendingDeleteId(null);
+    showFeedback(result.message, result.ok ? "success" : "error");
+  };
+
+  const handleDownload = async (project) => {
+    const result = await onDownloadProject(project);
+
+    if (!result.ok) {
+      showFeedback(result.message, "error");
+    }
+  };
+
   const filteredProjects = projects.filter((project) => {
     const searchMatch =
       project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -39,6 +63,10 @@ function BrowsePage({
       </section>
 
       <DashboardStats projects={projects} error={error} />
+
+      {feedback && (
+        <p className={`inline-message ${feedback.type}`}>{feedback.message}</p>
+      )}
 
       <section className="search-panel">
         <div className="search-row">
@@ -97,14 +125,30 @@ function BrowsePage({
                 <button
                   type="button"
                   className="delete-button"
-                  onClick={() => onDeleteProject(project.id)}
+                  onClick={() => setPendingDeleteId(project.id)}
                 >
                   Delete
                 </button>
-                <button type="button" onClick={() => onDownloadProject(project)}>
+                <button type="button" onClick={() => handleDownload(project)}>
                   Download
                 </button>
               </div>
+
+              {pendingDeleteId === project.id && (
+                <div className="card-confirm">
+                  <p>Confirm delete?</p>
+                  <button
+                    type="button"
+                    className="delete-button"
+                    onClick={() => handleConfirmDelete(project.id)}
+                  >
+                    Yes, Delete
+                  </button>
+                  <button type="button" onClick={() => setPendingDeleteId(null)}>
+                    Cancel
+                  </button>
+                </div>
+              )}
             </article>
           ))
         ) : (

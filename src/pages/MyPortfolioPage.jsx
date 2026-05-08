@@ -1,9 +1,32 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const CURRENT_USER = "N. Shrestha";
 
 function MyPortfolioPage({ projects, isLoading, error, onDeleteProject, onDownloadProject }) {
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [feedback, setFeedback] = useState(null);
   const myProjects = projects.filter((project) => project.owner === CURRENT_USER);
+
+  const showFeedback = (message, type = "success") => {
+    setFeedback({ message, type });
+    window.setTimeout(() => setFeedback(null), 3500);
+  };
+
+  const handleConfirmDelete = async (projectId) => {
+    const result = await onDeleteProject(projectId);
+
+    setPendingDeleteId(null);
+    showFeedback(result.message, result.ok ? "success" : "error");
+  };
+
+  const handleDownload = async (project) => {
+    const result = await onDownloadProject(project);
+
+    if (!result.ok) {
+      showFeedback(result.message, "error");
+    }
+  };
 
   return (
     <section className="hero">
@@ -14,6 +37,10 @@ function MyPortfolioPage({ projects, isLoading, error, onDeleteProject, onDownlo
           Submit New Project
         </Link>
       </section>
+
+      {feedback && (
+        <p className={`inline-message ${feedback.type}`}>{feedback.message}</p>
+      )}
 
       <section className="project-grid">
         {isLoading ? (
@@ -47,14 +74,30 @@ function MyPortfolioPage({ projects, isLoading, error, onDeleteProject, onDownlo
                 <button
                   type="button"
                   className="delete-button"
-                  onClick={() => onDeleteProject(project.id)}
+                  onClick={() => setPendingDeleteId(project.id)}
                 >
                   Delete
                 </button>
-                <button type="button" onClick={() => onDownloadProject(project)}>
+                <button type="button" onClick={() => handleDownload(project)}>
                   Download
                 </button>
               </div>
+
+              {pendingDeleteId === project.id && (
+                <div className="card-confirm">
+                  <p>Confirm delete?</p>
+                  <button
+                    type="button"
+                    className="delete-button"
+                    onClick={() => handleConfirmDelete(project.id)}
+                  >
+                    Yes, Delete
+                  </button>
+                  <button type="button" onClick={() => setPendingDeleteId(null)}>
+                    Cancel
+                  </button>
+                </div>
+              )}
             </article>
           ))
         ) : (

@@ -13,6 +13,7 @@ function EditProjectPage({ apiUrl, setProjects }) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [formMessage, setFormMessage] = useState(null);
 
   useEffect(() => {
     async function fetchProject() {
@@ -53,16 +54,20 @@ function EditProjectPage({ apiUrl, setProjects }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setFormMessage(null);
 
     if (!formData.title || !formData.githubUrl || !formData.description || !formData.technologies) {
-      alert("Please complete all required fields.");
+      setFormMessage({ type: "error", text: "Please complete all required fields." });
       return;
     }
 
     const githubPattern = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/?$/;
 
     if (!githubPattern.test(formData.githubUrl)) {
-      alert("Please enter a valid GitHub repository URL, for example: https://github.com/username/repo");
+      setFormMessage({
+        type: "error",
+        text: "Please enter a valid GitHub repository URL, for example: https://github.com/username/repo",
+      });
       return;
     }
 
@@ -95,10 +100,9 @@ function EditProjectPage({ apiUrl, setProjects }) {
         )
       );
 
-      alert("Project updated successfully. This simulates PUT /api/projects/{id}.");
       navigate("/");
     } catch {
-      alert("Unable to update project. Please make sure json-server is running.");
+      setFormMessage({ type: "error", text: "Something went wrong. Please try again." });
     }
   };
 
@@ -116,6 +120,10 @@ function EditProjectPage({ apiUrl, setProjects }) {
         <h2>Edit Project</h2>
         <p>Update project metadata before returning to Browse.</p>
       </div>
+
+      {formMessage && (
+        <p className={`inline-message ${formMessage.type}`}>{formMessage.text}</p>
+      )}
 
       <form className="edit-form form-panel" onSubmit={handleSubmit}>
         <label>

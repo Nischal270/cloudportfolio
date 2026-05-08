@@ -67,12 +67,6 @@ function App() {
   };
 
   const handleDeleteProject = async (projectId) => {
-    const shouldDelete = window.confirm("Are you sure you want to delete this project?");
-
-    if (!shouldDelete) {
-      return;
-    }
-
     try {
       const response = await fetch(`${API_URL}/${projectId}`, {
         method: "DELETE",
@@ -86,23 +80,24 @@ function App() {
         currentProjects.filter((project) => String(project.id) !== String(projectId))
       );
 
-      alert("Project deleted successfully. This simulates DELETE /api/projects/{id}.");
+      return { ok: true, message: "Project deleted successfully." };
     } catch {
-      alert("Unable to delete project. Please make sure json-server is running.");
+      return { ok: false, message: "Something went wrong. Please try again." };
     }
   };
 
   const handleDownloadProject = async (project) => {
     if (!Array.isArray(project.files) || project.files.length === 0) {
-      alert("No uploaded file is available for this project.");
-      return;
+      return { ok: false, message: "No uploaded file is available for this project." };
     }
 
     const uploadedFile = project.files.find((file) => file?.blobName);
 
     if (!uploadedFile) {
-      alert("This project only has a saved file name. Please upload a new project with a real file.");
-      return;
+      return {
+        ok: false,
+        message: "This project only has a saved file name. Please upload a new project with a real file.",
+      };
     }
 
     try {
@@ -128,8 +123,9 @@ function App() {
       link.click();
       link.remove();
       URL.revokeObjectURL(downloadUrl);
+      return { ok: true, message: "Download started." };
     } catch {
-      alert("Unable to download file. Please try again.");
+      return { ok: false, message: "Something went wrong. Please try again." };
     }
   };
 
