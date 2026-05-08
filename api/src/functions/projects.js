@@ -17,7 +17,7 @@ const container = database.container(process.env.COSMOS_CONTAINER_NAME);
 const blobServiceClient = BlobServiceClient.fromConnectionString(
   process.env.AZURE_STORAGE_CONNECTION_STRING
 );
-const blobContainerClient = blobServiceClient.getContainerClient(
+const containerClient = blobServiceClient.getContainerClient(
   process.env.BLOB_CONTAINER_NAME
 );
 
@@ -73,21 +73,35 @@ async function uploadFiles(projectId, files) {
   const fileMetadata = [];
 
   for (const file of files) {
-    const blobName = `${projectId}/${Date.now()}-${file.name}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const fileName = file.name || "uploaded-file";
+    const safeFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const blobName = `${projectId}/${Date.now()}-${safeFileName}`;
     const contentType = file.type || "application/octet-stream";
-    const blockBlobClient = blobContainerClient.getBlockBlobClient(blobName);
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    await blockBlobClient.uploadData(buffer, {
-      blobHTTPHeaders: { blobContentType: contentType },
-    });
+    try {
+      const buffer = Buffer.from(await file.arrayBuffer());
 
-    fileMetadata.push({
-      fileName: file.name,
-      blobName,
-      contentType,
-      size: file.size,
-    });
+      await blockBlobClient.uploadData(buffer, {
+        blobHTTPHeaders: {
+          blobContentType: contentType,
+        },
+      });
+
+      fileMetadata.push({
+        fileName,
+        blobName,
+        contentType,
+        size: file.size,
+      });
+    } catch (error) {
+      console.error("Blob upload failed", {
+        fileName,
+        blobName,
+        message: error.message,
+      });
+      throw error;
+    }
   }
 
   return fileMetadata;
@@ -132,14 +146,10 @@ async function buildProjectFromJsonRequest(request) {
     rating: body.rating || 0,
     description: body.description,
     githubUrl: body.githubUrl,
-    files: Array.isArray(body.files) ? body.files : [],
+    files: body.files || [],
     createdAt: timestamp,
     updatedAt: timestamp,
   };
-}
-
-function getContentType(request) {
-  return request.headers.get("content-type") || "";
 }
 
 app.http("projects", {
@@ -176,7 +186,8 @@ app.http("projects", {
       }
 
       if (request.method === "POST") {
-        const project = getContentType(request).includes("multipart/form-data")
+        const contentType = request.headers.get("content-type") || "";
+        const project = contentType.includes("multipart/form-data")
           ? await buildProjectFromMultipartRequest(request)
           : await buildProjectFromJsonRequest(request);
 
@@ -267,7 +278,7 @@ app.http("projectDownload", {
         });
       }
 
-      const storedFile = project.files[0];
+      const storedFile = project.files.find((file) => file?.blobName);
 
       if (!storedFile?.blobName) {
         return jsonResponse(404, {
@@ -275,7 +286,7 @@ app.http("projectDownload", {
         });
       }
 
-      const blockBlobClient = blobContainerClient.getBlockBlobClient(storedFile.blobName);
+      const blockBlobClient = containerClient.getBlockBlobClient(storedFile.blobName);
       const fileBuffer = await blockBlobClient.downloadToBuffer();
       const fileName = String(storedFile.fileName || "project-file").replaceAll('"', "");
 

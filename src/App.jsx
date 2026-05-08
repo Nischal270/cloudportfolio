@@ -98,6 +98,13 @@ function App() {
       return;
     }
 
+    const uploadedFile = project.files.find((file) => file?.blobName);
+
+    if (!uploadedFile) {
+      alert("This project only has a saved file name. Please upload a new project with a real file.");
+      return;
+    }
+
     try {
       const response = await fetch(`${API_URL}/${project.id}/download`);
 
@@ -111,8 +118,7 @@ function App() {
       const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/i);
       const fileName =
         fileNameMatch?.[1] ||
-        project.files[0]?.fileName ||
-        project.files[0]?.name ||
+        uploadedFile.fileName ||
         "project-file";
       const link = document.createElement("a");
 
