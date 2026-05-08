@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const CURRENT_USER = "N. Shrestha";
 
-function MyPortfolioPage({ projects, isLoading, error, onDeleteProject }) {
+function MyPortfolioPage({ projects, isLoading, error, onDeleteProject, onDownloadProject }) {
   const myProjects = projects.filter((project) => project.owner === CURRENT_USER);
 
   return (
@@ -50,6 +50,9 @@ function MyPortfolioPage({ projects, isLoading, error, onDeleteProject }) {
                   onClick={() => onDeleteProject(project.id)}
                 >
                   Delete
+                </button>
+                <button type="button" onClick={() => onDownloadProject(project)}>
+                  Download
                 </button>
               </div>
             </article>

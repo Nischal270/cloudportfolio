@@ -11,6 +11,7 @@ function BrowsePage({
   onTagChange,
   filterTags,
   onDeleteProject,
+  onDownloadProject,
 }) {
   const filteredProjects = projects.filter((project) => {
     const searchMatch =
@@ -100,7 +101,9 @@ function BrowsePage({
                 >
                   Delete
                 </button>
-                <button type="button">Download</button>
+                <button type="button" onClick={() => onDownloadProject(project)}>
+                  Download
+                </button>
               </div>
             </article>
           ))

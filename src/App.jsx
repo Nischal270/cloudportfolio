@@ -92,6 +92,41 @@ function App() {
     }
   };
 
+  const handleDownloadProject = async (project) => {
+    if (!Array.isArray(project.files) || project.files.length === 0) {
+      alert("No uploaded file is available for this project.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/${project.id}/download`);
+
+      if (!response.ok) {
+        throw new Error("Project file download failed.");
+      }
+
+      const fileBlob = await response.blob();
+      const downloadUrl = URL.createObjectURL(fileBlob);
+      const contentDisposition = response.headers.get("Content-Disposition") || "";
+      const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/i);
+      const fileName =
+        fileNameMatch?.[1] ||
+        project.files[0]?.fileName ||
+        project.files[0]?.name ||
+        "project-file";
+      const link = document.createElement("a");
+
+      link.href = downloadUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+    } catch {
+      alert("Unable to download file. Please try again.");
+    }
+  };
+
   return (
     <BrowserRouter>
       <div className="app">
@@ -112,6 +147,7 @@ function App() {
                   onTagChange={setSelectedTag}
                   filterTags={filterTags}
                   onDeleteProject={handleDeleteProject}
+                  onDownloadProject={handleDownloadProject}
                 />
               }
             />
@@ -145,6 +181,7 @@ function App() {
                   isLoading={isLoading}
                   error={error}
                   onDeleteProject={handleDeleteProject}
+                  onDownloadProject={handleDownloadProject}
                 />
               }
             />

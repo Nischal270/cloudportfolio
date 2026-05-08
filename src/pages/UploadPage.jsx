@@ -35,15 +35,33 @@ function UploadPage({
       rating: 0,
       description: formData.description,
       githubUrl: formData.githubUrl,
-      files: attachedFiles.map((file) => file.name),
+      files: [],
     };
 
     try {
-      const response = await fetch(apiUrl, {
+      let requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newProject),
-      });
+      };
+
+      if (attachedFiles.length > 0) {
+        const uploadData = new FormData();
+
+        uploadData.append("title", formData.title);
+        uploadData.append("githubUrl", formData.githubUrl);
+        uploadData.append("description", formData.description);
+        uploadData.append("technologies", formData.technologies);
+        uploadData.append("owner", "N. Shrestha");
+        attachedFiles.forEach((file) => uploadData.append("files", file));
+
+        requestOptions = {
+          method: "POST",
+          body: uploadData,
+        };
+      }
+
+      const response = await fetch(apiUrl, requestOptions);
 
       if (!response.ok) {
         throw new Error("Project save failed.");
