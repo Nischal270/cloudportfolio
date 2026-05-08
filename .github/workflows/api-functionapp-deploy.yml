@@ -31,6 +31,6 @@ jobs:
       - name: Deploy Azure Functions API
         uses: Azure/functions-action@v1
         with:
-          app-name: "cloudportfolio-api"
+          app-name: "cloudportfolio-api-win"
           package: "api"
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
