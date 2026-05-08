@@ -9,7 +9,7 @@ import MyPortfolioPage from "./pages/MyPortfolioPage.jsx";
 import UploadPage from "./pages/UploadPage.jsx";
 import SignInPage from "./pages/SignInPage.jsx";
 
-const API_URL = "https://cloudportfolio-api-win.azurewebsites.net/api/projects";
+const API_URL = "https://cloudportfolio-api-win-e8axhyf2g9d9fxet.switzerlandnorth-01.azurewebsites.net/api/projects";
 const filterTags = ["All", "React", "Python", "Azure", "Node.js", "ML/AI", "Docker"];
 
 function App() {
